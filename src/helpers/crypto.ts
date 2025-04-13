@@ -7,3 +7,7 @@ export const generateCodeVerifier = (): string => {
 export const generateCodeChallenge = (verifier: string): string => {
 	return crypto.createHash('sha256').update(verifier).digest('base64url')
 }
+
+export const generateState = (): string => {
+	return crypto.randomBytes(32).toString('hex')
+}
