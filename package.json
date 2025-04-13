@@ -21,7 +21,7 @@
 		"url": "https://github.com/sansjack/svauth"
 	},
 	"scripts": {
-		"build": "bunup src/index.ts --format esm,cjs",
+		"build": "bunup src/index.ts --format esm",
 		"dev": "bun --watch src/index.ts",
 		"test": "bun test"
 	},
