@@ -4,16 +4,34 @@ import { generateCodeVerifier, generateCodeChallenge } from '@helpers/crypto'
 import { OAuthClients, OAuthClient, TokenResponse, OAuthConfigs } from './types'
 import type { Cookies, RequestEvent } from '@sveltejs/kit'
 
-/* should NEVER be used on any client side / browser */
 isServer()
 
+/**
+ * Single instance of a client
+ *
+ * @export
+ * @class OAuthInstance
+ * @typedef {OAuthInstance}
+ */
 export class OAuthInstance {
 	#client: OAuthClient
 
+	/**
+	 * Creates an instance of OAuthInstance.
+	 *
+	 * @constructor
+	 * @param {OAuthClient} client
+	 */
 	constructor(client: OAuthClient) {
 		this.#client = client
 	}
 
+	/**
+	 * Generates an authorize url for the client config
+	 *
+	 * @param {RequestEvent} event
+	 * @returns {string}
+	 */
 	generateAuthorizeUrl(event: RequestEvent): string {
 		const state = generateState()
 
@@ -58,7 +76,6 @@ export class OAuthInstance {
 			params.set('code_challenge_method', 'S256')
 		}
 
-		/* add any additional params for example googles offline access */
 		if (this.#client.params) {
 			this.#client.params.forEach((param) => {
 				const [[key, value]] = Object.entries(param)
@@ -93,6 +110,13 @@ export class OAuthInstance {
 		return code
 	}
 
+	/**
+	 * Takes your callback request and gives you a TokenResponse
+	 *
+	 * @async
+	 * @param {RequestEvent} event
+	 * @returns {Promise<TokenResponse>}
+	 */
 	async exchangeCodeForToken(event: RequestEvent): Promise<TokenResponse> {
 		if (!this.#client) {
 			throw new Error(`Client "${this.#client}" not found.`)
@@ -140,13 +164,37 @@ export class OAuthInstance {
 	}
 }
 
+/**
+ * Global handler to access all your clients config
+ *
+ * @export
+ * @class OAuthHandler
+ * @typedef {OAuthHandler}
+ */
 export class OAuthHandler {
+	/**
+	 * list of all OAuthClients added to the OAuthConfig
+	 *
+	 * @type {OAuthClients}
+	 */
 	#clients: OAuthClients
 
+	/**
+	 * Creates an instance of OAuthHandler.
+	 *
+	 * @constructor
+	 * @param {OAuthConfigs} clients
+	 */
 	constructor(clients: OAuthConfigs) {
 		this.#clients = new Map<string, OAuthClient>(Object.entries(clients))
 	}
 
+	/**
+	 * Get an OAuthInstance by name (github, google, etc)
+	 *
+	 * @param {string} clientName
+	 * @returns {OAuthInstance}
+	 */
 	get(clientName: string): OAuthInstance {
 		const hasFound = this.#clients.get(clientName)
 
