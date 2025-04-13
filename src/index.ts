@@ -26,6 +26,30 @@ export class OAuthInstance {
 		this.#client = client
 	}
 
+	#verifyState(cookies: Cookies, returnedState: string): boolean {
+		const storedState = cookies.get('oauth_state')
+		cookies.delete('oauth_state', { path: '/' })
+
+		if (!storedState || storedState !== returnedState) {
+			throw new Error('Invalid state parameter - possible CSRF attack')
+		}
+
+		return true
+	}
+
+	#parseCallbackUrl(url: string, cookies: Cookies): string {
+		const params = new URLSearchParams(url.split('?')[1])
+		const state = params.get('state')
+		const code = params.get('code')
+
+		if (!state || !code) {
+			throw new Error('Invalid callback URL: missing code or state')
+		}
+
+		this.#verifyState(cookies, state)
+		return code
+	}
+
 	/**
 	 * Generates an authorize url for the client config
 	 *
@@ -84,30 +108,6 @@ export class OAuthInstance {
 		}
 
 		return `${this.#client.authorizeUrl}?${params.toString()}`
-	}
-
-	#verifyState(cookies: Cookies, returnedState: string): boolean {
-		const storedState = cookies.get('oauth_state')
-		cookies.delete('oauth_state', { path: '/' })
-
-		if (!storedState || storedState !== returnedState) {
-			throw new Error('Invalid state parameter - possible CSRF attack')
-		}
-
-		return true
-	}
-
-	#parseCallbackUrl(url: string, cookies: Cookies): string {
-		const params = new URLSearchParams(url.split('?')[1])
-		const state = params.get('state')
-		const code = params.get('code')
-
-		if (!state || !code) {
-			throw new Error('Invalid callback URL: missing code or state')
-		}
-
-		this.#verifyState(cookies, state)
-		return code
 	}
 
 	/**
