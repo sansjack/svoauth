@@ -1,6 +1,6 @@
 export type Scopes = {
 	values: string[]
-	delimiter?: 'space' | 'comma' | 'colon'
+	delimiter?: ' ' | ',' | ':'
 }
 
 export interface OAuthClient {

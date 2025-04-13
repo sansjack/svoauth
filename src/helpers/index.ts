@@ -12,17 +12,3 @@ export const isServer = () => {
 		)
 	}
 }
-
-export const mapDelimiter = (delimiter: Scopes['delimiter']): string => {
-	switch (delimiter) {
-		case 'space':
-			return ' '
-		case 'comma':
-			return ','
-		case 'colon':
-			return ':'
-
-		default:
-			return ' ' // fallback to spaces
-	}
-}

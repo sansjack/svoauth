@@ -1,5 +1,5 @@
 /// <reference path="./types/index.ts" />
-import { generateState, isServer, mapDelimiter } from '@helpers'
+import { generateState, isServer } from '@helpers'
 import { generateCodeVerifier, generateCodeChallenge } from '@helpers/crypto'
 import { OAuthClients, OAuthClient, TokenResponse, OAuthConfigs } from './types'
 import type { Cookies, RequestEvent } from '@sveltejs/kit'
@@ -65,7 +65,7 @@ export class OAuthInstance {
 			client_id: this.#client.clientId,
 			redirect_uri: this.#client.redirectUri,
 			scope: this.#client.scopes.values.join(
-				mapDelimiter(this.#client.scopes.delimiter)
+				this.#client.scopes.delimiter ?? ' '
 			),
 			response_type: 'code',
 		})
