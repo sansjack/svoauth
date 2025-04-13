@@ -1,5 +1,5 @@
 {
-	"name": "svauth",
+	"name": "svoauth",
 	"version": "0.0.1",
 	"main": "dist/index.mjs",
 	"module": "dist/index.mjs",
@@ -18,7 +18,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/sansjack/svauth"
+		"url": "https://github.com/sansjack/svoauth"
 	},
 	"scripts": {
 		"build": "bunup src/index.ts --format esm",

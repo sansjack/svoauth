@@ -2,7 +2,7 @@ import { defineConfig } from 'bunup'
 
 export default defineConfig({
 	entry: ['src/index.ts'],
-	name: 'svauth',
+	name: 'svoauth',
 	outDir: 'dist',
 	target: 'node',
 	minify: false,
