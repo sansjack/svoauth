@@ -162,6 +162,96 @@ export class OAuthInstance {
 
 		return response.json() as Promise<TokenResponse>
 	}
+	/**
+	 * Use your refresh token to get a new access token
+	 *
+	 * @async
+	 * @param {string} refreshToken
+	 * @returns {Promise<TokenResponse>}
+	 */
+	async refreshToken(refreshToken: string): Promise<TokenResponse> {
+		if (!this.#client) {
+			throw new Error(`Client "${this.#client}" not found.`)
+		}
+
+		if (!refreshToken) {
+			throw new Error('Refresh token not found')
+		}
+
+		if (!this.#client.refreshTokenUrl) {
+			console.warn('Refresh token url not found using token url')
+		}
+
+		const params = new URLSearchParams({
+			client_id: this.#client.clientId,
+			client_secret: this.#client.clientSecret,
+			refresh_token: refreshToken,
+			grant_type: 'refresh_token',
+		})
+
+		const response = await fetch(
+			this.#client.refreshTokenUrl || this.#client.tokenUrl,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					Accept: 'application/json',
+					'Accept-Encoding': 'application/json',
+				},
+				body: params.toString(),
+			}
+		)
+
+		if (!response.ok) {
+			throw new Error('Failed to refresh token')
+		}
+
+		const tokenResponse = (await response.json()) as TokenResponse
+
+		return tokenResponse
+	}
+	/**
+	 * Use your access token or refresh token to revoke access.
+	 *
+	 * @async
+	 * @param {string} token
+	 * @returns {Promise<TokenResponse>}
+	 */
+	async revokeToken(token: string): Promise<boolean> {
+		if (!this.#client) {
+			throw new Error(`Client "${this.#client}" not found.`)
+		}
+
+		if (!token) {
+			throw new Error('Token not found')
+		}
+
+		if (!this.#client.revokeTokenUrl) {
+			console.error('Revoke token URL not found')
+			throw new Error('Revoke token URL not configured')
+		}
+
+		const params = new URLSearchParams({
+			token: token,
+		})
+
+		const response = await fetch(this.#client.revokeTokenUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				Accept: 'application/json',
+				'Accept-Encoding': 'application/json',
+			},
+			body: params.toString(),
+		})
+
+		if (!response.ok) {
+			console.error(response)
+			throw new Error('Failed to revoke token')
+		}
+
+		return true
+	}
 }
 
 /**
