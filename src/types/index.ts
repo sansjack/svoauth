@@ -17,12 +17,24 @@ export interface OAuthClient {
 }
 
 export interface TokenResponse {
-	accessToken: string
-	tokenType?: string
-	expiresIn?: number
-	refreshToken?: string
+	id_token: string
+	access_token: string
+	token_type: string
+	expires_in?: number
+	expires_at?: number
+	refresh_token?: string
 	scope?: string
 	[key: string]: any
+}
+
+export interface Tokens {
+	hasAccessToken(): boolean
+	hasRefreshToken(): boolean
+	accessToken(): string
+	refreshToken(): string
+	expiresAt(): Date | undefined
+	refreshToken(): string
+	idToken(): string
 }
 
 export type OAuthClients = Map<string, OAuthClient>
