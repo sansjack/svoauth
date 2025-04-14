@@ -12,7 +12,8 @@
 		"oauth",
 		"oauth2",
 		"pkce",
-		"authorization"
+		"authorization",
+		"config-driven"
 	],
 	"files": [
 		"dist",
