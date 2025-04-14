@@ -62,6 +62,7 @@ class OAuthInstance {
 
 	#parseTokenResponse(response: TokenResponse): Tokens {
 		return {
+			...response,
 			hasAccessToken() {
 				return !!response.access_token
 			},
