@@ -13,6 +13,7 @@
     "declarationDir": "./dist",
     "declaration": true,
     "sourceMap": true,
+    "noImplicitAny": true,
     "paths": {
       "@types": ["types/index"],
       "@helpers": ["helpers/index"],

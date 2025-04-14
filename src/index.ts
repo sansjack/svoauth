@@ -1,7 +1,17 @@
 /// <reference path="./types/index.ts" />
 import { isServer } from '@helpers'
-import { generateCodeVerifier, generateCodeChallenge, generateState } from '@helpers/crypto'
-import { OAuthClients, OAuthClient, TokenResponse, OAuthConfigs } from './types'
+import {
+	generateCodeVerifier,
+	generateCodeChallenge,
+	generateState,
+} from '@helpers/crypto'
+import {
+	OAuthClients,
+	OAuthClient,
+	TokenResponse,
+	OAuthConfigs,
+	Tokens,
+} from './types'
 import type { Cookies, RequestEvent } from '@sveltejs/kit'
 
 isServer()
@@ -13,7 +23,7 @@ isServer()
  * @class OAuthInstance
  * @typedef {OAuthInstance}
  */
-export class OAuthInstance {
+class OAuthInstance {
 	#client: OAuthClient
 
 	/**
@@ -48,6 +58,55 @@ export class OAuthInstance {
 
 		this.#verifyState(cookies, state)
 		return code
+	}
+
+	#parseTokenResponse(response: TokenResponse): Tokens {
+		return {
+			hasAccessToken() {
+				return !!response.access_token
+			},
+			hasRefreshToken() {
+				return !!response.refresh_token
+			},
+			idToken() {
+				return response.id_token
+			},
+			accessToken() {
+				if (!response.access_token) throw Error('No access token found')
+				return response.access_token
+			},
+			refreshToken() {
+				if (!response.refresh_token) throw Error('No refresh token found')
+				return response.refresh_token
+			},
+			expiresAt() {
+				if (
+					typeof response.expires_in === 'number' &&
+					Number.isFinite(response.expires_in) &&
+					response.expires_in > 0
+				) {
+					return new Date(Date.now() + response.expires_in * 1000)
+				}
+
+				if (response.expires_at) {
+					if (typeof response.expires_at === 'string') {
+						const expiresAt = new Date(response.expires_at)
+						if (!isNaN(expiresAt.getTime())) {
+							return expiresAt
+						}
+					}
+
+					if (
+						typeof response.expires_at === 'number' &&
+						Number.isFinite(response.expires_at)
+					) {
+						return new Date(response.expires_at * 1000)
+					}
+				}
+
+				return undefined
+			},
+		}
 	}
 
 	/**
@@ -115,9 +174,9 @@ export class OAuthInstance {
 	 *
 	 * @async
 	 * @param {RequestEvent} event
-	 * @returns {Promise<TokenResponse>}
+	 * @returns {Promise<Tokens>}
 	 */
-	async exchangeCodeForToken(event: RequestEvent): Promise<TokenResponse> {
+	async exchangeCodeForToken(event: RequestEvent): Promise<Tokens> {
 		if (!this.#client) {
 			throw new Error(`Client "${this.#client}" not found.`)
 		}
@@ -160,16 +219,18 @@ export class OAuthInstance {
 			throw new Error('Failed to exchange code for token')
 		}
 
-		return response.json() as Promise<TokenResponse>
+		const tokenResponse = (await response.json()) as TokenResponse
+
+		return this.#parseTokenResponse(tokenResponse)
 	}
 	/**
 	 * Use your refresh token to get a new access token
 	 *
 	 * @async
 	 * @param {string} refreshToken
-	 * @returns {Promise<TokenResponse>}
+	 * @returns {Promise<Tokens>}
 	 */
-	async refreshToken(refreshToken: string): Promise<TokenResponse> {
+	async refreshToken(refreshToken: string): Promise<Tokens> {
 		if (!this.#client) {
 			throw new Error(`Client "${this.#client}" not found.`)
 		}
@@ -208,7 +269,7 @@ export class OAuthInstance {
 
 		const tokenResponse = (await response.json()) as TokenResponse
 
-		return tokenResponse
+		return this.#parseTokenResponse(tokenResponse)
 	}
 	/**
 	 * Use your access token or refresh token to revoke access.
@@ -295,5 +356,3 @@ export class OAuthHandler {
 		return new OAuthInstance(hasFound)
 	}
 }
-
-export { OAuthClients, OAuthClient, TokenResponse, OAuthConfigs }

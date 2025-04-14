@@ -6,10 +6,9 @@ export default defineConfig({
 	outDir: 'dist',
 	target: 'node',
 	minify: false,
+	format: ['esm'],
 	dts: {
-		resolve: true,
-		entry: {
-			types: 'src/index.ts',
-		},
+		resolve: false,
+		entry: ['src/index.ts', 'src/types/types.ts'],
 	},
 })
