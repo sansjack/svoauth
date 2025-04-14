@@ -20,6 +20,9 @@
 		"README.md",
 		"LICENSE"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"author": "Jack Sansom <contact@jacksansom.com>",
 	"license": "MIT",
 	"repository": {
