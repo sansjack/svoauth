@@ -24,6 +24,17 @@ This was really made for my own use but I decided to make a public package so th
 > [!WARNING]  
 > This package is not meant for the use of authentication but rather for the use of authorization and retrieving access tokens. This should also ONLY be used on the server-side.
 
+## 🗺️ Roadmap / TODO
+
+My Plans for `svoauth`:
+
+- [ ] Improve error handling and response structure
+- [ ] Expand config options (custom headers, custom callbacks)
+- [ ] Add some tests
+- [ ] Create a proper documentation site with more in-depth examples and explanations
+
+Have ideas? Feel free to open an issue or PR!
+
 ### ⚙️ Configuration
 
 Define your OAuth clients in a central `oauth.ts` config file:
