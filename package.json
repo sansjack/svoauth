@@ -1,9 +1,9 @@
 {
 	"name": "svoauth",
 	"version": "0.0.3",
-	"main": "dist/index.mjs",
-	"module": "dist/index.mjs",
-	"types": "dist/types.d.mts",
+	"main": "dist/index.js",
+	"module": "dist/index.js",
+	"types": "dist/types.d.ts",
 	"type": "module",
 	"keywords": [
 		"svelte",
