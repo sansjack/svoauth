@@ -1,6 +1,6 @@
 {
 	"name": "svoauth",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"main": "dist/index.mjs",
 	"module": "dist/index.mjs",
 	"types": "dist/types.d.mts",
@@ -14,6 +14,12 @@
 		"pkce",
 		"authorization"
 	],
+	"files": [
+		"dist",
+		"package.json",
+		"README.md",
+		"LICENSE"
+	],
 	"author": "Jack Sansom <contact@jacksansom.com>",
 	"license": "MIT",
 	"repository": {
@@ -23,6 +29,7 @@
 	"scripts": {
 		"build": "bunup src/index.ts --format esm",
 		"dev": "bun --watch src/index.ts",
+		"npub": "bun run build && bun publish",
 		"test": "bun test"
 	},
 	"devDependencies": {

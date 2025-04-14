@@ -263,7 +263,7 @@ export class OAuthInstance {
  */
 export class OAuthHandler {
 	/**
-	 * list of all OAuthClients added to the OAuthConfig
+	 * All OAuthClients added to the OAuthConfig
 	 *
 	 * @type {OAuthClients}
 	 */
