@@ -4,9 +4,7 @@
 
 ---
 
-### ⚙️ Configuration
 
-Define your OAuth clients in a central `oauth.ts` config file:
 
 ### 📦 Features
 
@@ -24,6 +22,10 @@ This was really made for my own use but I decided to make a public package so th
 
 > [!WARNING]  
 > This package is not meant for the use of authentication but rather for the use of authorization and retrieving access tokens. This should also ONLY be used on the server-side.
+
+### ⚙️ Configuration
+
+Define your OAuth clients in a central `oauth.ts` config file:
 
 ```ts
 // src/lib/server/oauth.ts
@@ -99,12 +101,74 @@ export const GET = async (event) => {
 
 ---
 
+### ♻️ Refresh Token
+
+Create a route to refresh the access token using a refresh token.
+
+```ts
+// src/routes/refresh/[client]/+server.ts
+import { svoAuth } from '$lib/server/oauth';
+import { json, error } from '@sveltejs/kit';
+
+type RefreshReqest = {
+    token: string;
+};
+
+export const POST = async (event) => {
+    const { params, request } = event;
+    const clientName = params.client;
+
+    const result = (await request.json()) as RefreshReqest;
+    const { token } = result;
+
+    if (!token) {
+        throw error(422);
+    }
+
+    const newTokens = await svoAuth.get(clientName).refreshToken(token);
+    const access_token = newTokens.accessToken();
+
+    return json({ message: access_token });
+};
+```
+
+---
+
+### 🚫 Revoke Token
+
+Create a route to revoke a refresh token.
+
+```ts
+// src/routes/revoke/[client]/+server.ts
+import { svoAuth } from '$lib/server/oauth';
+import { json, error } from '@sveltejs/kit';
+
+type RevokeRequest = {
+    refresh_token: string;
+};
+
+export const POST = async (event) => {
+    const { params, request } = event;
+    const clientName = params.client;
+
+    const result = (await request.json()) as RevokeRequest;
+    const { refresh_token } = result;
+
+    if (!refresh_token) {
+        throw error(422);
+    }
+
+    await svoAuth.get(clientName).revokeToken(refresh_token);
+
+    return json({ message: `${clientName} token has been revoked` });
+};
+```
+
+---
+
 ### ✅ Example Flow
 
 1. Navigate to `/link/github`
 2. You get redirected to GitHub to authorize
 3. After auth, GitHub redirects to `/callback/github`
 4. The access token is extracted and returned as JSON
-
-
----
