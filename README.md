@@ -10,6 +10,7 @@
 
 - ⚙️ Config-driven approach
 - ⚡️ Minimal SvelteKit integration
+- 🏋️‍♀️ Lightweight and < 20kb
 - 🔄 Supports token exchange, refresh, and revoke
 - 💻 Server side rendering only (no client-side code)
 - 🔐 PKCE support (e.g., for Google)
