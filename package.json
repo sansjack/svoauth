@@ -1,6 +1,6 @@
 {
 	"name": "svoauth",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"main": "dist/index.mjs",
 	"module": "dist/index.mjs",
 	"types": "dist/types.d.mts",
@@ -29,13 +29,15 @@
 	"scripts": {
 		"build": "bunup src/index.ts --format esm",
 		"dev": "bun --watch src/index.ts",
-		"npub": "bun run build && bun publish",
 		"test": "bun test"
 	},
 	"devDependencies": {
 		"bun-types": "^1.2.8",
 		"bunup": "^0.4.11",
-		"typescript": "^4.0.0 || ^5.0.0"
+		"typescript": "^4.0.0 || ^5.0.0",
+		"semantic-release": "^24.1.3",
+		"@semantic-release/git": "^10.0.1",
+		"@semantic-release/npm": "^12.0.1"
 	},
 	"peerDependencies": {
 		"svelte": ">=4.0.0",
