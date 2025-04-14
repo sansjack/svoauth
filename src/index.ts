@@ -4,6 +4,7 @@ import {
 	generateCodeVerifier,
 	generateCodeChallenge,
 	generateState,
+	basicCredentialsEncode,
 } from '@helpers/crypto'
 import {
 	OAuthClients,
@@ -124,11 +125,18 @@ class OAuthInstance {
 		const params = new URLSearchParams({
 			client_id: this.#client.clientId,
 			redirect_uri: this.#client.redirectUri,
-			scope: this.#client.scopes.values.join(
-				this.#client.scopes.delimiter ?? ' '
-			),
 			response_type: 'code',
 		})
+		// scope: this.#client.scopes.values.join(
+		// 	this.#client.scopes.delimiter ?? ' '
+		// ),
+
+		if (this.#client.scopes.values.length > 0) {
+			params.set(
+				'scope',
+				this.#client.scopes.values.join(this.#client.scopes.delimiter ?? ' ')
+			)
+		}
 
 		if (state) {
 			cookies.set('oauth_state', state, {
@@ -205,18 +213,28 @@ class OAuthInstance {
 			params.set('code_verifier', codeVerifier)
 		}
 
+		const bodyBytes = new TextEncoder().encode(params.toString())
+
 		const response = await fetch(this.#client.tokenUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 				Accept: 'application/json',
 				'Accept-Encoding': 'application/json',
+				'User-Agent': 'svoauth',
+
+				//not sure if this will interfere with services which do NOT need this?
+				Authorization: basicCredentialsEncode(
+					this.#client.clientId,
+					this.#client.clientSecret
+				),
 			},
-			body: params.toString(),
+			body: bodyBytes,
 		})
 
 		if (!response.ok) {
 			console.error(response)
+			console.error(await response.text())
 			throw new Error('Failed to exchange code for token')
 		}
 

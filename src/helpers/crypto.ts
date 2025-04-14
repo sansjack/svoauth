@@ -11,3 +11,10 @@ export const generateCodeChallenge = (verifier: string): string => {
 export const generateState = (): string => {
 	return crypto.randomBytes(32).toString('hex')
 }
+
+export const basicCredentialsEncode = (
+	username: string,
+	password: string
+): string => {
+	return Buffer.from(`Basic ${username}:${password}`).toString('base64')
+}
