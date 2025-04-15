@@ -82,27 +82,24 @@ class OAuthInstance {
 				return response.refresh_token
 			},
 			expiresAt() {
+				const { expires_in, expires_at } = response
+
 				if (
-					typeof response.expires_in === 'number' &&
-					Number.isFinite(response.expires_in) &&
-					response.expires_in > 0
+					typeof expires_in === 'number' &&
+					Number.isFinite(expires_in) &&
+					expires_in > 0
 				) {
-					return new Date(Date.now() + response.expires_in * 1000)
+					return new Date(Date.now() + expires_in * 1000)
 				}
 
-				if (response.expires_at) {
-					if (typeof response.expires_at === 'string') {
-						const expiresAt = new Date(response.expires_at)
-						if (!isNaN(expiresAt.getTime())) {
-							return expiresAt
-						}
+				if (expires_at) {
+					if (typeof expires_at === 'string') {
+						const date = new Date(expires_at)
+						return isNaN(date.getTime()) ? undefined : date
 					}
 
-					if (
-						typeof response.expires_at === 'number' &&
-						Number.isFinite(response.expires_at)
-					) {
-						return new Date(response.expires_at * 1000)
+					if (typeof expires_at === 'number' && Number.isFinite(expires_at)) {
+						return new Date(expires_at * 1000)
 					}
 				}
 
