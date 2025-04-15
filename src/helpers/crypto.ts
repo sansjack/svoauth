@@ -16,5 +16,7 @@ export const basicCredentialsEncode = (
 	username: string,
 	password: string
 ): string => {
-	return Buffer.from(`Basic ${username}:${password}`).toString('base64')
+	const bytes = new TextEncoder().encode(`${username}:${password}`)
+	const binary = String.fromCharCode(...bytes)
+	return btoa(binary)
 }

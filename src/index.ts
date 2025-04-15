@@ -224,10 +224,10 @@ class OAuthInstance {
 				'User-Agent': 'svoauth',
 
 				//not sure if this will interfere with services which do NOT need this?
-				Authorization: basicCredentialsEncode(
+				Authorization: `Basic ${basicCredentialsEncode(
 					this.#client.clientId,
 					this.#client.clientSecret
-				),
+				)}`,
 			},
 			body: bodyBytes,
 		})
