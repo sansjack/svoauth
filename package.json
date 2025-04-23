@@ -43,7 +43,7 @@
 	},
 	"devDependencies": {
 		"bun-types": "^1.2.9",
-		"bunup": "^0.4.15",
+		"bunup": "0.4.15",
 		"typescript": "^5.8.3",
 		"semantic-release": "^24.2.3",
 		"@semantic-release/git": "^10.0.1",
