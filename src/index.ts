@@ -193,7 +193,9 @@ class OAuthInstance {
 
 		const params = new URLSearchParams({
 			client_id: this.#client.clientId,
-			client_secret: this.#client.clientSecret,
+			scope: this.#client.scopes.values.join(
+				this.#client.scopes.delimiter ?? ' '
+			),
 			code,
 			redirect_uri: this.#client.redirectUri,
 			grant_type: 'authorization_code',
@@ -210,23 +212,29 @@ class OAuthInstance {
 			params.set('code_verifier', codeVerifier)
 		}
 
-		const bodyBytes = new TextEncoder().encode(params.toString())
+		//only add the secret if not using PKCE
+		// if (!this.#client.pkce) {
+		params.set('client_secret', this.#client.clientSecret)
+		// }
+
+		const basicAuth = this.#client.pkce
+			? {}
+			: {
+					Authorization: `Basic ${basicCredentialsEncode(
+						this.#client.clientId,
+						this.#client.clientSecret
+					)}`,
+			  }
 
 		const response = await fetch(this.#client.tokenUrl, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 				Accept: 'application/json',
-				'Accept-Encoding': 'application/json',
 				'User-Agent': 'svoauth',
-
-				//not sure if this will interfere with services which do NOT need this?
-				Authorization: `Basic ${basicCredentialsEncode(
-					this.#client.clientId,
-					this.#client.clientSecret
-				)}`,
-			},
-			body: bodyBytes,
+				...basicAuth,
+			} as HeadersInit,
+			body: params.toString(),
 		})
 
 		if (!response.ok) {
