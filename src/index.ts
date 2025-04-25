@@ -213,9 +213,8 @@ class OAuthInstance {
 		}
 
 		//only add the secret if not using PKCE
-		if (!this.#client.pkce) {
-			params.set('client_secret', this.#client.clientSecret)
-		}
+		// if (!this.#client.pkce) {
+		params.set('client_secret', this.#client.clientSecret)
 
 		const basicAuth = this.#client.pkce
 			? {}
