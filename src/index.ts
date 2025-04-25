@@ -253,7 +253,7 @@ class OAuthInstance {
 	 * @param {string} refreshToken
 	 * @returns {Promise<Tokens>}
 	 */
-	async refreshToken(refreshToken: string): Promise<Tokens> {
+	async refreshToken(refreshToken: string): Promise<Tokens | null> {
 		if (!this.#client) {
 			throw new Error(`Client "${this.#client}" not found.`)
 		}
@@ -263,7 +263,8 @@ class OAuthInstance {
 		}
 
 		if (!this.#client.refreshTokenUrl) {
-			console.warn('Refresh token url not found using token url')
+			console.warn('Refresh token url not found')
+			return null
 		}
 
 		const params = new URLSearchParams({
