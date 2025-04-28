@@ -274,15 +274,23 @@ class OAuthInstance {
 			grant_type: 'refresh_token',
 		})
 
+		const basicAuth = this.#client.pkce
+			? {}
+			: {
+					Authorization: `Basic ${basicCredentialsEncode(
+						this.#client.clientId,
+						this.#client.clientSecret
+					)}`,
+			  }
+
 		const response = await fetch(
 			this.#client.refreshTokenUrl || this.#client.tokenUrl,
 			{
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
-					Accept: 'application/json',
-					'Accept-Encoding': 'application/json',
-				},
+					...basicAuth,
+				} as HeadersInit,
 				body: params.toString(),
 			}
 		)
