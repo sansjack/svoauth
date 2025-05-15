@@ -35,6 +35,10 @@ class OAuthInstance {
 	 */
 	constructor(client: OAuthClient) {
 		this.#client = client
+
+		if (this.#client.basicAuth === undefined) {
+			this.#client.basicAuth = true
+		}
 	}
 
 	#verifyState(cookies: Cookies, returnedState: string): boolean {
@@ -216,14 +220,14 @@ class OAuthInstance {
 		// if (!this.#client.pkce) {
 		params.set('client_secret', this.#client.clientSecret)
 
-		const basicAuth = this.#client.pkce
-			? {}
-			: {
+		const basicAuth = this.#client.basicAuth
+			? {
 					Authorization: `Basic ${basicCredentialsEncode(
 						this.#client.clientId,
 						this.#client.clientSecret
 					)}`,
 			  }
+			: {}
 
 		const response = await fetch(this.#client.tokenUrl, {
 			method: 'POST',
@@ -274,14 +278,14 @@ class OAuthInstance {
 			grant_type: 'refresh_token',
 		})
 
-		const basicAuth = this.#client.pkce
-			? {}
-			: {
+		const basicAuth = this.#client.basicAuth
+			? {
 					Authorization: `Basic ${basicCredentialsEncode(
 						this.#client.clientId,
 						this.#client.clientSecret
 					)}`,
 			  }
+			: {}
 
 		const response = await fetch(
 			this.#client.refreshTokenUrl || this.#client.tokenUrl,

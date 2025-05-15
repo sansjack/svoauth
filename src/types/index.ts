@@ -12,6 +12,7 @@ export interface OAuthClient {
 	refreshTokenUrl?: string
 	redirectUri: string
 	pkce?: boolean
+	basicAuth?: boolean
 	scopes: Scopes
 	params?: Record<string, string>[]
 }
